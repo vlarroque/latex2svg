@@ -10,7 +10,7 @@ IDs in case more than one is used on the same HTML page.
 Based on [original work](https://github.com/tuxu/latex2svg) by Tino Wagner.
 """
 
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 __version__ = VERSION
 __author__ = "vlarroque"
 __email__ = ""
@@ -242,13 +242,19 @@ def ui():
             # so we need to scale the output SVG instead
             params["scale"] = font_size / 10
 
+            convert_button.config(text="Converting...", bg="orange")
+            root.update()
+
             out = latex2svg(latex_code, params)
 
             pyperclip.copy(out["svg"])
-            convert_button.config(text="Copied!", bg="green")
-            root.after(500, lambda: convert_button.config(text="Copy", bg="grey"))
+            convert_button.config(text="Copied to clipboard!", bg="green")
+            root.after(1000, lambda: convert_button.config(text="Copy", bg="grey"))
 
         except subprocess.CalledProcessError as exc:
+            convert_button.config(text="Copy", bg="grey")
+            root.update()
+
             e = exc.output.decode("utf-8") + exc.stderr.decode("utf-8")
 
             if latex_code == DEFAULT_MATH:
@@ -283,6 +289,7 @@ def ui():
             error_window.grab_set()
             error_window.transient(root)
             error_window.mainloop()
+            
 
     DEFAULT_MATH = """$$
 

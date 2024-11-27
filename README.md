@@ -1,9 +1,9 @@
 # latex2svg
 
-Python wrapper and CLI utility to convert LaTeX math to Affinity Designer compatible SVG using
+Python wrapper and CLI/UI utility to convert LaTeX math to Affinity Designer compatible SVG using
 [dvisvgm](https://dvisvgm.de/) and [scour](https://github.com/scour-project/scour).
 
-Based on the [original work](https://github.com/Moonbase59/latex2svg) by Matthias C. Hormann. This version of the script directly copies a Affinity Designer compatible svg to clipboard.
+Based on the [original work](https://github.com/Moonbase59/latex2svg) by Matthias C. Hormann. This version of the script directly copies a Affinity Designer compatible svg to clipboard. 
 
 ## Installation
 
@@ -36,6 +36,13 @@ $ latex2svg "$$L_o = L_e + \int_{\Omega} L_i \cdot f_r \cdot \cos \theta \, \tex
 $ latex2svg "$H(X) = - \sum_{x \in \mathcal{X}} p(x) \log_2 p(x)$" -fs 16
 ```
 After running any of the above command, you just have to paste (`Ctrl+V`) into Affinity Designer to add the LaTeX equation.
+
+### User Interface
+You can choose to edit LateX equation in a simple user interface by calling the script without arguments:
+```
+$ latex2svg
+```
+This user interface is usefull for editing multiline/more complex LaTeX equations.
 
 ## Requirements
 

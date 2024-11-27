@@ -27,6 +27,8 @@ from ctypes.util import find_library
 
 default_template = r"""
 \documentclass[preview]{standalone}
+\usepackage{amsmath}
+\usepackage{amsfonts}
 {{ preamble }}
 \begin{document}
 \begin{preview}

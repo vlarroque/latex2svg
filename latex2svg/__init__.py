@@ -10,7 +10,7 @@ IDs in case more than one is used on the same HTML page.
 Based on [original work](https://github.com/tuxu/latex2svg) by Tino Wagner.
 """
 
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 __version__ = VERSION
 __author__ = "vlarroque"
 __email__ = ""
@@ -387,8 +387,11 @@ def cli():
         print(exc.stderr.decode("utf-8"), file=sys.stderr)
         sys.exit(exc.returncode)
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) == 1:
         ui()
     else:
         cli()
+
+if __name__ == "__main__":
+    main()

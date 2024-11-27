@@ -41,7 +41,9 @@ $ latex2svg "$H(X) = - \sum_{x \in \mathcal{X}} p(x) \log_2 p(x)$" -fs 16
 - Python 3
 - A working LaTeX installation, like _Tex Live_
 - [dvisvgm](https://dvisvgm.de/) (likely installed with LaTeX)
-- [ghostscript](https://www.ghostscript.com/) version < `10.01.0`(https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/tag/gs1000) (dvisvgm as an [issue](https://dvisvgm.de/Manpage/) on above version using `--pdf`)
+- [ghostscript](https://www.ghostscript.com/) version < [`10.01.0`](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/tag/gs1000)
+
+dvisvgm as an [issue](https://dvisvgm.de/Manpage/) on version > `10.01.0` when using the `--pdf` option.
 
 ## Licence
 

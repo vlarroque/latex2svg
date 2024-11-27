@@ -10,12 +10,12 @@ IDs in case more than one is used on the same HTML page.
 Based on [original work](https://github.com/tuxu/latex2svg) by Tino Wagner.
 """
 
-VERSION = '0.4.1'
+VERSION = "0.0.1"
 __version__ = VERSION
-__author__ = 'Matthias C. Hormann'
-__email__ = 'mhormann@gmx.de'
-__license__ = 'MIT'
-__copyright__ = 'Copyright (c) 2022, Matthias C. Hormann'
+__author__ = "vlarroque"
+__email__ = ""
+__license__ = "No License / Public Domain"
+__copyright__ = "Contributions (c) 2024, vlarroque"
 
 import os
 import sys
@@ -26,7 +26,7 @@ from tempfile import TemporaryDirectory
 from ctypes.util import find_library
 
 default_template = r"""
-\documentclass[{{ fontsize }}pt,preview]{standalone}
+\documentclass[preview]{standalone}
 {{ preamble }}
 \begin{document}
 \begin{preview}
@@ -36,83 +36,30 @@ default_template = r"""
 """
 
 default_preamble = r"""
-\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{amstext}
-\usepackage{newtxtext}
-\usepackage[libertine]{newtxmath}
-% prevent errors from old font commands
-\DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}
-\DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\mathsf}
-\DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\mathtt}
-\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
-\DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}
-\DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}
-\DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}
-% prevent errors from undefined shortcuts
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\Z}{\mathbb{Z}}
 """
 
-default_svgo_config = r"""
-module.exports = {
-  plugins: [
-    {
-      // use default preset (almost)
-      name: 'preset-default',
-      params: {
-        overrides: {
-          // viewbox required to resize SVGs with CSS, disable removal
-          removeViewBox: false,
-        },
-      },
-      // enable prefixIds
-      name: 'prefixIds',
-      params: {
-        prefix: '{{ prefix }}',
-        delim: '_',
-      },
-    },
-  ],
-};
-"""
-
-latex_cmd = 'latex -interaction nonstopmode -halt-on-error'
-dvisvgm_cmd = 'dvisvgm --no-fonts --exact-bbox'
-svgo_cmd = 'svgo -i {{ infile }} -o {{ outfile }}'
-# scour uses a default "precision" of 5 significant digits
-# Good enough? Or should we add "--set-precision=7" (or 8)?
-# not a tuple but a long concatenated string:
-scour_cmd = ('scour --shorten-ids --shorten-ids-prefix="{{ prefix }}" '
-    '--no-line-breaks --remove-metadata --enable-comment-stripping '
-    '--strip-xml-prolog -i {{ infile }} -o {{ outfile }}')
+latex_cmd = "pdflatex -interaction nonstopmode -halt-on-error"
+dvisvgm_cmd = "dvisvgm --pdf --no-fonts --exact-bbox"
+scour_cmd = (
+    'scour --shorten-ids --shorten-ids-prefix="{{ prefix }}" '
+    "--no-line-breaks --remove-metadata --enable-comment-stripping "
+    "--strip-xml-prolog -i {{ infile }} -o {{ outfile }}"
+)
 
 default_params = {
-    'fontsize': 12,  # TeX pt
-    'template': default_template,
-    'preamble': default_preamble,
-    'latex_cmd': latex_cmd,
-    'dvisvgm_cmd': dvisvgm_cmd,
-    'scale': 1.0,  # default extra scaling (done by dvisvgm)
-    'svgo_cmd': svgo_cmd,
-    'svgo_config': default_svgo_config,
-    'scour_cmd': scour_cmd,
-    'optimizer': 'scour',
-    'libgs': None,
+    "fontsize": 12,  # TeX pt
+    "template": default_template,
+    "preamble": default_preamble,
+    "latex_cmd": latex_cmd,
+    "dvisvgm_cmd": dvisvgm_cmd,
+    "scale": 1.0,  # default extra scaling (done by dvisvgm)
+    "scour_cmd": scour_cmd,
+    "optimizer": "scour",
+    "libgs": None,
 }
-
-
-if not hasattr(os.environ, 'LIBGS') and not find_library('gs'):
-    if sys.platform == 'darwin':
-        # Fallback to homebrew Ghostscript on macOS
-        homebrew_libgs = '/usr/local/opt/ghostscript/lib/libgs.dylib'
-        if os.path.exists(homebrew_libgs):
-            default_params['libgs'] = homebrew_libgs
-    if not default_params['libgs']:
-        print('Warning: libgs not found', file=sys.stderr)
 
 
 def latex2svg(code, params=default_params, working_directory=None):
@@ -144,130 +91,125 @@ def latex2svg(code, params=default_params, working_directory=None):
     # Caution: TeX & dvisvgm work with TeX pt (1/72.27"), but we need DTP pt (1/72")
     # so we need a scaling factor for correct output sizes
     # dvisvgm will produce a viewBox in DTP pt but SHOW TeX pt in its output.
-    scaling = 1.00375 # (1/72)/(1/72.27)
+    scaling = 1.00375  # (1/72)/(1/72.27)
 
-    fontsize = params['fontsize']
-    document = (params['template']
-                .replace('{{ preamble }}', params['preamble'])
-                .replace('{{ fontsize }}', str(fontsize))
-                .replace('{{ code }}', code))
+    fontsize = params["fontsize"]
+    document = (
+        params["template"]
+        .replace("{{ preamble }}", params["preamble"])
+        .replace("{{ fontsize }}", str(fontsize))
+        .replace("{{ code }}", code)
+    )
 
-    with open(os.path.join(working_directory, 'code.tex'), 'w') as f:
+    with open(os.path.join(working_directory, "code.tex"), "w") as f:
         f.write(document)
 
     # Run LaTeX and create DVI file
     try:
-        ret = subprocess.run(shlex.split(params['latex_cmd']+' code.tex'),
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                             cwd=working_directory)
+        ret = subprocess.run(
+            shlex.split(params["latex_cmd"] + " code.tex"),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=working_directory,
+        )
         ret.check_returncode()
     except FileNotFoundError:
-        raise RuntimeError('latex not found')
+        raise RuntimeError("latex not found")
 
     # Add LIBGS to environment if supplied
     env = os.environ.copy()
-    if params['libgs']:
-        env['LIBGS'] = params['libgs']
 
     # Convert DVI to SVG
-    dvisvgm_cmd = params['dvisvgm_cmd'] + ' --scale=%f' % params['scale']
-    dvisvgm_cmd += ' code.dvi'
+    dvisvgm_cmd = params["dvisvgm_cmd"] + " --scale=%f" % params["scale"]
+    dvisvgm_cmd += " code.pdf"
     try:
-        ret = subprocess.run(shlex.split(dvisvgm_cmd),
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                             cwd=working_directory, env=env)
+        ret = subprocess.run(
+            shlex.split(dvisvgm_cmd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=working_directory,
+            env=env,
+        )
         ret.check_returncode()
     except FileNotFoundError:
-        raise RuntimeError('dvisvgm not found')
+        raise RuntimeError("dvisvgm not found")
 
     # Parse dvisvgm output for size and alignment
     def get_size(output):
-        regex = r'\b([0-9.]+)pt x ([0-9.]+)pt'
+        regex = r"\b([0-9.]+)pt x ([0-9.]+)pt"
         match = re.search(regex, output)
         if match:
-            return (float(match.group(1)) / fontsize * scaling,
-                    float(match.group(2)) / fontsize * scaling)
+            return (
+                float(match.group(1)) / fontsize * scaling,
+                float(match.group(2)) / fontsize * scaling,
+            )
         else:
             return None, None
 
     def get_measure(output, name):
-        regex = r'\b%s=([0-9.e-]+)pt' % name
+        regex = r"\b%s=([0-9.e-]+)pt" % name
         match = re.search(regex, output)
         if match:
             return float(match.group(1)) / fontsize * scaling
         else:
             return None
 
-    output = ret.stderr.decode('utf-8')
+    output = ret.stderr.decode("utf-8")
     width, height = get_size(output)
-    depth = get_measure(output, 'depth')
+    depth = get_measure(output, "depth")
     # no baseline offset if depth not found
     if depth is None:
         depth = 0.0
 
     # Modify SVG attributes, to a get a self-contained, scaling SVG
     from lxml import etree
+
     # read SVG, discarding all comments ("<-- Generated by… -->")
     parser = etree.XMLParser(remove_comments=True)
-    xml = etree.parse(os.path.join(working_directory, 'code.svg'), parser)
+    xml = etree.parse(os.path.join(working_directory, "code.svg"), parser)
     svg = xml.getroot()
-    svg.set('width', f'{width:.6f}em')
-    svg.set('height', f'{height:.6f}em')
-    svg.set('style', f'vertical-align:{-depth:.6f}em')
-    xml.write(os.path.join(working_directory, 'code.svg'))
+    svg.set("width", f"{width:.6f}em")
+    svg.set("height", f"{height:.6f}em")
+    svg.set("style", f"vertical-align:{-depth:.6f}em")
+    xml.write(os.path.join(working_directory, "code.svg"))
 
     # Run optimizer to get a minified oneliner with (pseudo-)unique Ids
     # generate random prefix using ASCII letters (ID may not start with a digit)
     import random, string
-    prefix = ''.join(random.choice(string.ascii_letters) for n in range(3))
-    svgo_cmd = (params['svgo_cmd']
-        .replace('{{ infile }}', 'code.svg')
-        .replace('{{ outfile }}', 'optimized.svg'))
-    svgo_config = (params['svgo_config']
-        .replace('{{ prefix }}', prefix))
+
+    prefix = "".join(random.choice(string.ascii_letters) for n in range(3))
     # with scour, input & output files must be different
-    scour_cmd = (params['scour_cmd']
-        .replace('{{ prefix }}', prefix+'_')
-        .replace('{{ infile }}', 'code.svg')
-        .replace('{{ outfile }}', 'optimized.svg'))
+    scour_cmd = (
+        params["scour_cmd"]
+        .replace("{{ prefix }}", prefix + "_")
+        .replace("{{ infile }}", "code.svg")
+        .replace("{{ outfile }}", "optimized.svg")
+    )
 
-    if params['optimizer'] == 'scour':
-        # optimize SVG using scour (default)
-        try:
-            ret = subprocess.run(shlex.split(scour_cmd),
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                 cwd=working_directory, env=env)
-            ret.check_returncode()
-        except FileNotFoundError:
-            raise RuntimeError('scour not found')
-
-        with open(os.path.join(working_directory, 'optimized.svg'), 'r') as f:
+    # optimize SVG using scour (default)
+    try:
+        ret = subprocess.run(
+            shlex.split(scour_cmd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=working_directory,
+            env=env,
+        )
+        ret.check_returncode()
+    except FileNotFoundError:
+        print("scour not found, using unoptimized SVG", file=sys.stderr)
+        with open(os.path.join(working_directory, "code.svg"), "r") as f:
             svg = f.read()
 
-    elif params['optimizer'] == 'svgo':
-        # optimize SVG using svgo (optional)
-        # write svgo params file
-        with open(os.path.join(working_directory, 'svgo.config.js'), 'w') as f:
-            f.write(svgo_config)
+    with open(os.path.join(working_directory, "optimized.svg"), "r") as f:
+        svg = f.read()
 
-        try:
-            ret = subprocess.run(shlex.split(svgo_cmd),
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                 cwd=working_directory, env=env)
-            ret.check_returncode()
-        except FileNotFoundError:
-            raise RuntimeError('svgo not found')
-
-        with open(os.path.join(working_directory, 'optimized.svg'), 'r') as f:
-            svg = f.read()
-
-    else:
-        # no optimization, just return SVG
-        with open(os.path.join(working_directory, 'code.svg'), 'r') as f:
-            svg = f.read()
-
-    return {'svg': svg, 'valign': round(-depth,6),
-        'width': round(width,6), 'height': round(height,6)}
+    return {
+        "svg": svg,
+        "valign": round(-depth, 6),
+        "width": round(width, 6),
+        "height": round(height, 6),
+    }
 
 
 def main():
@@ -277,42 +219,45 @@ def main():
     - Write SVG to `stdout`.
     - On error: write error messages to `stderr` and return with error code.
     """
-    import json
+    import pyperclip
     import argparse
-    parser = argparse.ArgumentParser(description="""
-    Render LaTeX code from stdin as SVG to stdout. Writes metadata (baseline
-    offset, width, height in em units) into the SVG attributes.
-    """)
-    parser.add_argument('--version', action='version',
-                    version='%(prog)s {version}'.format(version=__version__))
-    parser.add_argument('--preamble',
-                        help="LaTeX preamble code to read from file")
-    parser.add_argument('--optimizer', choices=['scour', 'svgo', 'none'],
-        default='scour',
-        help='SVG optimizer to use (default: %(default)s)')
-    parser.add_argument('--scale', type=float,
-        default=1.0,
-        help='SVG output scaling (default: %(default)f)')
+
+    parser = argparse.ArgumentParser(
+        description="""
+    This script converts LaTeX code to SVG using LaTeX, dvisvgm and scour. The resulting SVG is copied to the clipboard.
+    """
+    )
+    parser.add_argument(
+        "-fs",
+        "--font-size",
+        type=int,
+        default=12,
+        help="Latex font size (default: %(default)f)",
+    )
+    parser.add_argument("latex_code", nargs="+")
+
     args = parser.parse_args()
     preamble = default_preamble
-    if args.preamble is not None:
-        with open(args.preamble) as f:
-            preamble = f.read()
-    latex = sys.stdin.read()
+    latex = " ".join(args.latex_code)
     try:
         params = default_params.copy()
-        params['preamble'] = preamble
-        params['optimizer'] = args.optimizer
-        params['scale'] = args.scale
+        params["preamble"] = preamble
+        # Changing the font size in the latex preamble does not impact math size
+        # so we need to scale the output SVG instead
+        params["scale"] = args.font_size / 10
+
         out = latex2svg(latex, params)
-        sys.stdout.write(out['svg'])
+
+        pyperclip.copy(out["svg"])
+        print("SVG copied to clipboard")
+
     except subprocess.CalledProcessError as exc:
         # LaTeX prints errors on stdout instead of stderr (stderr is empty),
         # dvisvgm to stderr, so print both (to stderr)
-        print(exc.output.decode('utf-8'), file=sys.stderr)
-        print(exc.stderr.decode('utf-8'), file=sys.stderr)
+        print(exc.output.decode("utf-8"), file=sys.stderr)
+        print(exc.stderr.decode("utf-8"), file=sys.stderr)
         sys.exit(exc.returncode)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

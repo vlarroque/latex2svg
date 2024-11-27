@@ -12,6 +12,7 @@ Install directly from this repository:
 ```bash
 pip3 install git+https://github.com/vlarroque/latex2svg.git#egg=latex2svg
 ```
+The script can be updated using the same command.
 
 ### CLI utility
 
@@ -42,7 +43,7 @@ You can choose to edit LateX equation in a simple user interface by calling the 
 ```
 $ latex2svg
 ```
-This user interface is usefull for editing multiline/more complex LaTeX equations.
+This user interface is useful for editing multi-line/more complex LaTeX equations.
 
 ## Requirements
 

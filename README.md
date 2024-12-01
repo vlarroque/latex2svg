@@ -50,7 +50,8 @@ This user interface is useful for editing multi-line/more complex LaTeX equation
 - Python 3
 - A working LaTeX installation, like _Tex Live_
 - [dvisvgm](https://dvisvgm.de/) (likely installed with LaTeX)
-- [ghostscript](https://www.ghostscript.com/) version < [`10.01.0`](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/tag/gs1000)
+- [muPDF](https://mupdf.com/) (better alternative to ghostscript for dvisvgm), install anywhere and add the folder to your system environnement variable
+- **OR** [ghostscript](https://www.ghostscript.com/) version < [`10.01.0`](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/tag/gs1000), create an environnement variable with the name `LIBGS` pointing to the Ghostscript install folder
 
 dvisvgm as an [issue](https://dvisvgm.de/Manpage/) on version > `10.01.0` when using the `--pdf` option.
 

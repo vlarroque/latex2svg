@@ -10,7 +10,7 @@ IDs in case more than one is used on the same HTML page.
 Based on [original work](https://github.com/tuxu/latex2svg) by Tino Wagner.
 """
 
-VERSION = "0.0.5"
+VERSION = "0.0.6"
 __version__ = VERSION
 __author__ = "vlarroque"
 __email__ = ""
@@ -24,15 +24,7 @@ import shlex
 import re
 from tempfile import TemporaryDirectory
 from ctypes.util import find_library
-
-# Modify SVG attributes, to a get a self-contained, scaling SVG
-from lxml import etree
-
-# Run optimizer to get a minified oneliner with (pseudo-)unique Ids
-# generate random prefix using ASCII letters (ID may not start with a digit)
 import random, string
-
-import pyperclip
 import argparse
 
 default_template = r"""
@@ -395,6 +387,10 @@ def cli():
         sys.exit(exc.returncode)
 
 def main():
+    # Modify SVG attributes, to a get a self-contained, scaling SVG
+    from lxml import etree
+    import pyperclip
+    
     if len(sys.argv) == 1:
         ui()
     else:

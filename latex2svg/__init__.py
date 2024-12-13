@@ -4,7 +4,7 @@
 Based on the [work](https://github.com/Moonbase59/latex2svg) of Matthias C. Hormann.
 """
 
-VERSION = "0.0.7"
+VERSION = "0.0.8"
 __version__ = VERSION
 __author__ = "vlarroque"
 __email__ = ""
@@ -296,11 +296,11 @@ $$"""
     font_size_input.grid(row=0, column=1, padx=5, sticky="ew")
 
     # Clear button
-    clear_button = tk.Button(input_frame, text="Clear", command=clear_text, bg="grey", fg="white", font=("Arial", 14))
+    clear_button = tk.Button(input_frame, text="Clear", command=clear_text, bg="grey", font=("Arial", 14))
     clear_button.grid(row=0, column=2, padx=5, sticky="ew")
 
     # Convert button (spans the width of Font Size and Clear buttons)
-    convert_button = tk.Button(frame, text="Copy", command=call_latex2svg, bg="grey", fg="white", font=("Arial", 14))
+    convert_button = tk.Button(frame, text="Copy", command=call_latex2svg, bg="grey", font=("Arial", 14))
     convert_button.grid(row=3, column=0, pady=5, padx=10, sticky="ew")
 
     # Configure row and column weight distribution for scaling
@@ -361,6 +361,8 @@ def cli():
 
 
 def main():
+    os.environ["DVISVGM_PDF_PROC"] = "mutool"
+
     if len(sys.argv) == 1:
         ui()
     else:
